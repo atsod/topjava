@@ -51,8 +51,8 @@ public class UserMealsUtil {
                                                              LocalTime endTime,
                                                              int caloriesPerDay) {
         return meals.stream()
-                .filter(m -> m.getDateTime().toLocalTime().isAfter(startTime))
-                .filter(m -> m.getDateTime().toLocalTime().isBefore(endTime))
+                .filter(m -> m.getDateTime().toLocalTime().isAfter(startTime)
+                        && m.getDateTime().toLocalTime().isBefore(endTime))
                 .map(m -> new UserMealWithExcess(m.getDateTime(), m.getDescription(), m.getCalories(), m.getCalories() > caloriesPerDay))
                 .collect(Collectors.toList());
     }
