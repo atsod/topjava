@@ -7,9 +7,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.Month;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class MealsUtil {
@@ -43,5 +41,32 @@ public class MealsUtil {
 
     private static MealTo createTo(Meal meal, boolean excess) {
         return new MealTo(meal.getDateTime(), meal.getDescription(), meal.getCalories(), excess);
+    }
+
+    public static List<MealTo> filteredByCycles(List<Meal> meals,
+                                                            LocalTime startTime,
+                                                            LocalTime endTime,
+                                                            int caloriesPerDay) {
+        List<MealTo> resultList = new ArrayList<>();
+        //<dayOfMonth, calories>
+        Map<Integer, Integer> summaryDailyCalories = new HashMap<>();
+        List<Meal> mealsFilteredList = new ArrayList<>();
+
+        for(Meal meal : meals) {
+            int day = meal.getDateTime().getDayOfMonth();
+            //кладем в мапу новое значение калорий, если их нет. Иначе прибавляем к уже существующему количеству.
+            summaryDailyCalories.put(day,
+                    summaryDailyCalories.getOrDefault(day, 0) + meal.getCalories());
+
+            if(TimeUtil.isBetweenHalfOpen(meal.getDateTime().toLocalTime(), startTime, endTime))
+                mealsFilteredList.add(meal);
+        }
+
+        for(Meal meal : mealsFilteredList) {
+            resultList.add(new MealTo(meal.getDateTime(), meal.getDescription(), meal.getCalories(),
+                    summaryDailyCalories.get(meal.getDateTime().getDayOfMonth()) > caloriesPerDay));
+        }
+
+        return resultList;
     }
 }
