@@ -50,21 +50,20 @@ public class MealsUtil {
                                                             LocalTime endTime,
                                                             int caloriesPerDay) {
         List<MealTo> resultList = new ArrayList<>();
-        //<dayOfMonth, calories>
-        Map<LocalDate, Integer> tempMap = new HashMap<>();
+        Map<LocalDate, Integer> sumCaloriesPerDay = new HashMap<>();
 
         for(Meal meal : meals) {
             LocalDate mealDate = meal.getDateTime().toLocalDate();
             //кладем в мапу новое значение калорий, если их нет. Иначе прибавляем к уже существующему количеству.
-            tempMap.put(mealDate,
-                    tempMap.getOrDefault(mealDate, 0) + meal.getCalories());
+            sumCaloriesPerDay.put(mealDate,
+                    sumCaloriesPerDay.getOrDefault(mealDate, 0) + meal.getCalories());
         }
 
         for(Meal meal : meals) {
             LocalDateTime dateTime = meal.getDateTime();
             if(TimeUtil.isBetweenHalfOpen(dateTime.toLocalTime(), startTime, endTime)) {
                 resultList.add(new MealTo(dateTime, meal.getDescription(), meal.getCalories(),
-                        tempMap.get(dateTime.toLocalDate()) > caloriesPerDay));
+                        sumCaloriesPerDay.get(dateTime.toLocalDate()) > caloriesPerDay));
             }
         }
         return resultList;
