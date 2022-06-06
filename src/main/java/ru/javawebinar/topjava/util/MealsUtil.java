@@ -41,31 +41,24 @@ public class MealsUtil {
                 .collect(Collectors.toList());
     }
 
-    private static MealTo createTo(Meal meal, boolean excess) {
-        return new MealTo(meal.getDateTime(), meal.getDescription(), meal.getCalories(), excess);
-    }
-
     public static List<MealTo> filteredByCycles(List<Meal> meals,
                                                             LocalTime startTime,
                                                             LocalTime endTime,
                                                             int caloriesPerDay) {
-        List<MealTo> resultList = new ArrayList<>();
-        Map<LocalDate, Integer> sumCaloriesPerDay = new HashMap<>();
 
-        for(Meal meal : meals) {
-            LocalDate mealDate = meal.getDateTime().toLocalDate();
-            //кладем в мапу новое значение калорий, если их нет. Иначе прибавляем к уже существующему количеству.
-            sumCaloriesPerDay.put(mealDate,
-                    sumCaloriesPerDay.getOrDefault(mealDate, 0) + meal.getCalories());
-        }
+        final Map<LocalDate, Integer> sumCaloriesPerDay = new HashMap<>();
+        meals.forEach(meal -> sumCaloriesPerDay.merge(meal.getDate(), meal.getCalories(), Integer::sum));
 
-        for(Meal meal : meals) {
-            LocalDateTime dateTime = meal.getDateTime();
-            if(TimeUtil.isBetweenHalfOpen(dateTime.toLocalTime(), startTime, endTime)) {
-                resultList.add(new MealTo(dateTime, meal.getDescription(), meal.getCalories(),
-                        sumCaloriesPerDay.get(dateTime.toLocalDate()) > caloriesPerDay));
+        final List<MealTo> mealsTo = new ArrayList<>();
+        meals.forEach(meal -> {
+            if(TimeUtil.isBetweenHalfOpen(meal.getTime(), startTime, endTime)) {
+                mealsTo.add(createTo(meal, sumCaloriesPerDay.get(meal.getDate()) > caloriesPerDay));
             }
-        }
-        return resultList;
+        });
+        return mealsTo;
+    }
+
+    private static MealTo createTo(Meal meal, boolean excess) {
+        return new MealTo(meal.getDateTime(), meal.getDescription(), meal.getCalories(), excess);
     }
 }
