@@ -24,6 +24,8 @@ public class MealsUtil {
 
         List<MealTo> mealsTo = filteredByStreams(meals, LocalTime.of(7, 0), LocalTime.of(12, 0), 2000);
         mealsTo.forEach(System.out::println);
+        List<MealTo> mealsCycle = filteredByCycles(meals, LocalTime.of(7, 0), LocalTime.of(12, 0), 2000);
+        mealsCycle.forEach(System.out::println);
     }
 
     public static List<MealTo> filteredByStreams(List<Meal> meals, LocalTime startTime, LocalTime endTime, int caloriesPerDay) {
@@ -49,24 +51,22 @@ public class MealsUtil {
                                                             int caloriesPerDay) {
         List<MealTo> resultList = new ArrayList<>();
         //<dayOfMonth, calories>
-        Map<Integer, Integer> summaryDailyCalories = new HashMap<>();
-        List<Meal> mealsFilteredList = new ArrayList<>();
+        Map<LocalDate, Integer> tempMap = new HashMap<>();
 
         for(Meal meal : meals) {
-            int day = meal.getDateTime().getDayOfMonth();
+            LocalDate mealDate = meal.getDateTime().toLocalDate();
             //кладем в мапу новое значение калорий, если их нет. Иначе прибавляем к уже существующему количеству.
-            summaryDailyCalories.put(day,
-                    summaryDailyCalories.getOrDefault(day, 0) + meal.getCalories());
-
-            if(TimeUtil.isBetweenHalfOpen(meal.getDateTime().toLocalTime(), startTime, endTime))
-                mealsFilteredList.add(meal);
+            tempMap.put(mealDate,
+                    tempMap.getOrDefault(mealDate, 0) + meal.getCalories());
         }
 
-        for(Meal meal : mealsFilteredList) {
-            resultList.add(new MealTo(meal.getDateTime(), meal.getDescription(), meal.getCalories(),
-                    summaryDailyCalories.get(meal.getDateTime().getDayOfMonth()) > caloriesPerDay));
+        for(Meal meal : meals) {
+            LocalDateTime dateTime = meal.getDateTime();
+            if(TimeUtil.isBetweenHalfOpen(dateTime.toLocalTime(), startTime, endTime)) {
+                resultList.add(new MealTo(dateTime, meal.getDescription(), meal.getCalories(),
+                        tempMap.get(dateTime.toLocalDate()) > caloriesPerDay));
+            }
         }
-
         return resultList;
     }
 }
