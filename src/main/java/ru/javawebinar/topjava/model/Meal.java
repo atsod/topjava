@@ -3,6 +3,7 @@ package ru.javawebinar.topjava.model;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 
 public class Meal {
     private final LocalDateTime dateTime;
@@ -10,6 +11,7 @@ public class Meal {
     private final String description;
 
     private final int calories;
+    private boolean excess;
 
     public Meal(LocalDateTime dateTime, String description, int calories) {
         this.dateTime = dateTime;
@@ -35,5 +37,9 @@ public class Meal {
 
     public LocalTime getTime() {
         return dateTime.toLocalTime();
+    }
+    public boolean isExcess() {return excess;}
+    public void setExcess(boolean excess) {
+        this.excess = excess;
     }
 }
