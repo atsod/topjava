@@ -8,6 +8,8 @@ import ru.javawebinar.topjava.service.MealService;
 
 import java.util.Collection;
 
+import static ru.javawebinar.topjava.web.SecurityUtil.authUserId;
+
 public class MealRestController {
 
     protected final Logger logger = LoggerFactory.getLogger(MealRestController.class);
@@ -20,11 +22,11 @@ public class MealRestController {
     }
 
     public boolean delete(int id) {
-        return service.delete(id);
+        return service.delete(authUserId());
     }
 
     public Meal get(int id) {
-        return service.get(id);
+        return service.get(authUserId());
     }
 
     public Collection<Meal> getAll() {

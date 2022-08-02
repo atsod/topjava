@@ -1,53 +1,49 @@
 package ru.javawebinar.topjava.repository.inmemory;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.repository.UserRepository;
-import ru.javawebinar.topjava.web.SecurityUtil;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Predicate;
 
 @Repository
 public class InMemoryUserRepository implements UserRepository {
     //private static final Logger log = LoggerFactory.getLogger(InMemoryUserRepository.class);
 
-    private final Map<Integer, User> repository = new HashMap<>();
+    private final Map<Integer, User> usersMap = new HashMap<>();
     private final AtomicInteger counter = new AtomicInteger(0);
 
     @Override
     public boolean delete(int id) {
-        return repository.remove(id) != null;
+        return usersMap.remove(id) != null;
     }
 
     @Override
     public User save(User user) {
         if(user.isNew()) {
             user.setId(counter.incrementAndGet());
-            repository.put(user.getId(), user);
+            usersMap.put(user.getId(), user);
             return user;
         }
-        return repository.computeIfPresent(user.getId(), (id, oldUser) -> user);
+        return usersMap.computeIfPresent(user.getId(), (id, oldUser) -> user);
     }
 
     @Override
     public User get(int id) {
-        return repository.get(id);
+        return usersMap.get(id);
     }
 
     @Override
     public List<User> getAll() {
-        return (List<User>) repository.values();
+        return (List<User>) usersMap.values();
     }
 
     @Override
     public User getByEmail(String email) {
-        return repository.values().stream()
+        return getAll().stream()
                 .filter(user -> user.getEmail().equals(email))
                 .findAny()
-                .get();
+                .orElse(null);
     }
 }
