@@ -22,6 +22,7 @@ public class MealService {
         this.repository = repository;
     }
 
+
     public Meal get(int id, int userId) {
         return checkNotFoundWithId(repository.get(id, userId), id);
     }

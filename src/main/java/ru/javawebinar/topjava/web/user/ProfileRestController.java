@@ -1,10 +1,15 @@
 package ru.javawebinar.topjava.web.user;
 
 import ru.javawebinar.topjava.model.User;
+import ru.javawebinar.topjava.service.UserService;
 
 import static ru.javawebinar.topjava.web.SecurityUtil.authUserId;
 
 public class ProfileRestController extends AbstractUserController {
+
+    public ProfileRestController(UserService service) {
+        super(service);
+    }
 
     public User get() {
         return super.get(authUserId());

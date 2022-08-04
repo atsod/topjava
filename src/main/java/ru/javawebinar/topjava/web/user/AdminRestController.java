@@ -1,10 +1,15 @@
 package ru.javawebinar.topjava.web.user;
 
 import ru.javawebinar.topjava.model.User;
+import ru.javawebinar.topjava.service.UserService;
 
 import java.util.List;
 
 public class AdminRestController extends AbstractUserController {
+
+    public AdminRestController(UserService service) {
+        super(service);
+    }
 
     @Override
     public List<User> getAll() {
