@@ -16,6 +16,10 @@
         <constructor-arg ref="userService"/>
     </bean>
 
+    <bean class="ru.javawebinar.topjava.web.user.ProfileRestController" id="profileRestController">
+        <constructor-arg ref="userService"/>
+    </bean>
+
     <bean class="ru.javawebinar.topjava.service.UserService" id="userService">
         <constructor-arg ref="inmemoryUserRepository"/>
     </bean>
