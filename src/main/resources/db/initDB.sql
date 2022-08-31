@@ -19,21 +19,19 @@ CREATE UNIQUE INDEX users_unique_email_idx ON users (email);
 CREATE TABLE user_roles
 (
     user_id INTEGER NOT NULL,
-    role    VARCHAR,
+    role    VARCHAR NOT NULL,
     CONSTRAINT user_roles_idx UNIQUE (user_id, role),
     FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
 );
 
-CREATE SEQUENCE meals_seq START WITH 200000;
-
 CREATE TABLE meals
 (
-    id          INTEGER   PRIMARY KEY,
-    date_time   TIMESTAMP NOT NULL,
-    description VARCHAR   NOT NULL,
-    calories    INTEGER   NOT NULL,
+    id          INTEGER   PRIMARY KEY DEFAULT nextval('global_seq'),
     user_id     INTEGER   NOT NULL,
+    date_time   TIMESTAMP NOT NULL,
+    description TEXT   NOT NULL,
+    calories    INT   NOT NULL,
     FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
 );
 
-CREATE UNIQUE INDEX meals_unique_date_time_idx ON meals (date_time)
+CREATE UNIQUE INDEX meals_unique_date_time_idx ON meals (user_id, date_time)
